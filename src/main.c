@@ -45,6 +45,17 @@ trim(char *str)
 	return trimmed;
 }
 
+#define PAGE_WIDTH "42em"
+static char *style =
+"html{background:url(\"res/qiron_seam.jpg\");background-color:#0d0c0c;background-repeat:repeat;font-family:\"Linux Libertine O\", \"Liberation Serif\", \"Times New Roman\", Times, serif;}\n\
+body{margin:2em auto;max-width:"PAGE_WIDTH";line-height:1.6;font-size:1.2em;color:#fff2da;padding:0 10px;image-rendering:pixelated;image-rendering:crisp-edges}\
+h1, h2{line-height:1.2; text-shadow: 2px 3px 0 #111}\n\
+h1{font-size:2.5em}\n\
+h2{font-size:2em;padding-top:1em}\n\
+h3{padding-right: 1em; text-shadow: 1px 2px 0 #111}\n\
+hr{margin-top: 2em; margin-bottom: 2em;border-color:#cfc2aa;color:#cfc2aa}\n\
+a{color:#fa4040}\n\
+a:visited{color:#aa2040}";
 static char *backgroundcolour = "#0d0c0c";
 static char *keywords         = "Hydra,Software";
 static char *author           = "Aleksandar";
@@ -78,6 +89,7 @@ convert(const char *path)
 	fprintf(out, "<meta name=\"keywords\" content=\"%s\">\n", keywords);
 	fprintf(out, "<meta name=\"author\" content=\"%s\">\n", author);
 	fprintf(out, "<meta name=\"description\" content=\"%s\">\n", description);
+	fprintf(out, "<style>%s</style>\n", style);
 	fprintf(out, "<title>%s</title>\n", title);
 	fputs("</head>\n", out);
 	
