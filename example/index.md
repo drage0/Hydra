@@ -4,7 +4,8 @@
 
 ## -h is for help
 
-Sure, I know.
+The whole point of life is to automate its process, right? No, yes?
+How about a copy/pasted text to offset my writing? No, no.
 
 ¬{basilisk}mhm.
 
@@ -13,26 +14,9 @@ Cog, cog... and factoreo?
 ## Images
 
 ¬{sand}S.A.N.D.
+A bunch of text to show how cute this schema is. It's dark, yes, but it also looks really cozy.
 !{res/sand_0.c.jpg}
 This is sand.
-
-### Sub
-
-marine.
-
-#### Depth
-
-very in-depth.
-
-#### More in-depth
-
-"Vingt mille lieues sous les mers."
-
-### Pop
-
-## Pop!
-
-# POP!
 
 Goodbye.
 
