@@ -45,11 +45,15 @@ trim(char *str)
 	return trimmed;
 }
 
+static char *backgroundcolour = "#0d0c0c";
+static char *keywords         = "Hydra,Software";
+static char *author           = "Aleksandar";
+static char *description      = "(denote void)";
 static void
 convert(const char *path)
 {
 	size_t len;
-	char outpath[256], line[512];
+	char outpath[256], line[512], title[64];
 	FILE *out, *in;
 	
 	/* Output path should replace suffix ".md" to ".html"*/
@@ -62,10 +66,33 @@ convert(const char *path)
 
 	in  = fopen(path, "r");
 	out = fopen(outpath, "w");
+	strcpy(title, "No title!!!");
+	
+	/* Head */
+	fputs("<!DOCTYPE html>\n", out);
+	fputs("<html>\n", out);
+	fputs("<head>\n", out);
+	fputs("<meta charset=\"UTF-8\">\n", out);
+	fputs("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n", out);
+	fprintf(out, "<meta name=\"theme-color\" content=\"%s\">\n", backgroundcolour);
+	fprintf(out, "<meta name=\"keywords\" content=\"%s\">\n", keywords);
+	fprintf(out, "<meta name=\"author\" content=\"%s\">\n", author);
+	fprintf(out, "<meta name=\"description\" content=\"%s\">\n", description);
+	fprintf(out, "<title>%s</title>\n", title);
+	fputs("</head>\n", out);
+	
+	/* Body */
+	fputs("<body>\n", out);
 	while (fgets(line, sizeof(line), in) != NULL)
 	{
 		char *line_trimmed;
 		line[strcspn(line, "\n")] = '\0';
+		
+		/* Skip empty lines. */
+		if (line[0] == '\0')
+		{
+			continue;
+		}
 
 		/* Headers */
 		if (line[0] == '#')
@@ -96,9 +123,15 @@ convert(const char *path)
 				line_trimmed = trim(line+1);
 				fprintf(out, "<h1>%s</h1>\n", line_trimmed);
 			}
-			
+		}
+		/* Paragraphs */
+		else
+		{
+			fprintf(out, "<p>%s</p>\n", line);
 		}
 	}
+	fputs("</body>\n", out);
+	fputs("</html>\n", out);
 }
 
 /*
