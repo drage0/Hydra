@@ -224,6 +224,7 @@ seekdirectory(const char *path)
 	if ((directory = opendir(path)) == NULL)
 	{
 		fprintf(stderr, "Directory \"%s\" can't be open.\n", path);
+		return;
 	}
 
 	while ((entry = readdir(directory)) != NULL)
