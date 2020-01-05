@@ -78,7 +78,7 @@ convert(const char *path)
 	char outpath[256], line[512], title[64];
 	FILE *out, *in;
 	
-	/* Output path should replace suffix ".md" to ".html"*/
+	/* Output path should replace suffix ".md" to ".html" */
 	strcpy(outpath, path);
 	len = strlen(outpath);
 	outpath[len-2] = '\0'; /* replace 'm' in ".md" with NULL. */
