@@ -28,7 +28,7 @@ ismarkdownfile(char *s)
 static void
 helpme(char *program)
 {
-	printf("Usage: %s [OPTIONS] PROJECT_DIRECTORY OUTPUT_DIRECTORY\n", program);
+	printf("Usage: %s [OPTIONS] PROJECT_DIRECTORY\n", program);
 	puts("Options:");
 	puts("  -h\t Print usage help.");
 	puts("  -v\t Verbose output.");
@@ -298,12 +298,6 @@ main(int argc, char **argv)
 		helpme(argv[0]);
 		return 0;
 	}
-	if (optind+1 >= argc)
-	{
-		puts("No output directory given. Exiting.");
-		helpme(argv[0]);
-		return 0;
-	}
 
 	/*
 	 * The leftover arguments are found at index of `optind`.
@@ -313,7 +307,6 @@ main(int argc, char **argv)
 	if (verbose)
 	{
 		printf("Project directory is \"%s\".\n", argv[optind]);
-		printf("Output directory is \"%s\".\n", argv[optind+1]);
 		puts("----------------");
 	}
 
