@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+static int verbose = 0;
+
 /*
  * Check if the given string representing the file name ends with ".md"
  * Shortest filename is a.md, length of 4.
@@ -29,6 +31,7 @@ helpme(char *program)
 	printf("Usage: %s [OPTIONS] PROJECT_DIRECTORY OUTPUT_DIRECTORY\n", program);
 	puts("Options:");
 	puts("  -h\t Print usage help.");
+	puts("  -v\t Verbose output.");
 }
 
 /*
@@ -78,19 +81,24 @@ convert(const char *path)
 	size_t len;
 	char outpath[256], line[512], title[64];
 	FILE *out, *in;
-	
+
 	/* Output path should replace suffix ".md" to ".html" */
 	strcpy(outpath, path);
 	len = strlen(outpath);
 	outpath[len-2] = '\0'; /* replace 'm' in ".md" with NULL. */
 	strcat(outpath, "html");
+
+	/* Friendly print. */
 	printf("Working with \"%s\".\n", path);
-	printf("Output is at \"%s\".\n", outpath);
+	if (verbose)
+	{
+		printf("Output is at \"%s\".\n", outpath);
+	}
 
 	in  = fopen(path, "r");
 	out = fopen(outpath, "w");
 	strcpy(title, "No title!!!");
-	
+
 	/* Head */
 	fputs("<!DOCTYPE html>\n", out);
 	fputs("<html>\n", out);
@@ -105,14 +113,14 @@ convert(const char *path)
 	fprintf(out, "<title>%s</title>\n", title);
 	fprintf(out, "<script src=\"%s\" defer></script>\n", javascriptpath);
 	fputs("</head>\n", out);
-	
+
 	/* Body */
 	fputs("<body onload=\"bodyloaded()\">\n", out);
 	while (fgets(line, sizeof(line), in) != NULL)
 	{
 		char *line_trimmed;
 		line[strcspn(line, "\n")] = '\0';
-		
+
 		/* Skip empty lines. */
 		if (line[0] == '\0')
 		{
@@ -228,7 +236,7 @@ seekdirectory(const char *path)
 		{
 			continue;
 		}
-		
+
 		/* Relative path to the found file is stored in relativefile. */
 		snprintf(relativefile, 512, "%s/%s", path, entry->d_name);
 
@@ -239,7 +247,10 @@ seekdirectory(const char *path)
 		}
 		if (S_ISDIR(filestat.st_mode))
 		{
-			printf("Entering directory \"%s\".\n", relativefile);
+			if (verbose)
+			{
+				printf("Entering directory \"%s\".\n", relativefile);
+			}
 			seekdirectory(relativefile);
 			continue;
 		}
@@ -253,7 +264,10 @@ seekdirectory(const char *path)
 			convert(relativefile);
 		}
 	}
-	printf("Leaving directory \"%s\".\n", path);
+	if (verbose)
+	{
+		printf("Leaving directory \"%s\".\n", path);
+	}
 }
 
 int
@@ -269,6 +283,9 @@ main(int argc, char **argv)
 		{
 		case 'h':
 			helpme(argv[0]);
+			break;
+		case 'v':
+			verbose = 1;
 			break;
 		default:
 			helpme(argv[0]);
@@ -293,9 +310,12 @@ main(int argc, char **argv)
 	 * Only the first and second argument is required, others are ignored.
 	 */
 	projectdirectory = argv[optind];
-	printf("Project directory is \"%s\".\n", argv[optind]);
-	printf("Output directory is \"%s\".\n", argv[optind+1]);
-	puts("----------------");
+	if (verbose)
+	{
+		printf("Project directory is \"%s\".\n", argv[optind]);
+		printf("Output directory is \"%s\".\n", argv[optind+1]);
+		puts("----------------");
+	}
 
 	/*
 	 * Here, recursion helps.
