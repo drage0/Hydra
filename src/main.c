@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include "configuration.h"
 
 static int verbose = 0;
 
@@ -50,31 +51,6 @@ trim(char *str)
 	return trimmed;
 }
 
-/*
- * Define the data used to make the HTML files.
- * PAGE_WIDTH defines the maximum width of the line.
- * TEXT_COLOUR defines the colour of the text.
- */
-#define PAGE_WIDTH "42em"
-#define TEXT_COLOUR "#fff2da"
-#define LINK_COLOUR "#fa4040"
-#define LINK_VISITCOLOUR "#aa2040"
-#define BACKGROUND_COLOUR "#353C51"
-static char *style =
-"html{background:url(\"res/qiron_seam.jpg\");background-color:"BACKGROUND_COLOUR";background-repeat:repeat;font-family:\"Linux Libertine O\", \"Liberation Serif\", \"Times New Roman\", Times, serif;}\n\
-body{margin:2em auto;max-width:"PAGE_WIDTH";line-height:1.6;font-size:1.2em;color:"TEXT_COLOUR";padding:0 10px;image-rendering:pixelated;image-rendering:crisp-edges}\
-h1, h2{line-height:1.2; text-shadow: 2px 3px 0 #111}\n\
-h1{font-size:2.5em}\n\
-h2{font-size:2em;padding-top:1em}\n\
-h3{padding-right: 1em; text-shadow: 1px 2px 0 #111}\n\
-hr{margin-top: 2em; margin-bottom: 2em;border-color:#cfc2aa;color:#cfc2aa}\n\
-img{width:100%;height:auto}\n\
-a{color:"LINK_COLOUR"}\n\
-a:visited{color:"LINK_VISITCOLOUR"}";
-static char *keywords         = "Hydra,Software";
-static char *author           = "Aleksandar";
-static char *description      = "(denote void)";
-static char *javascriptpath   = "res/main.js";
 static void
 convert(const char *path)
 {
@@ -105,13 +81,13 @@ convert(const char *path)
 	fputs("<head>\n", out);
 	fputs("<meta charset=\"UTF-8\">\n", out);
 	fputs("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n", out);
-	fprintf(out, "<meta name=\"theme-color\" content=\"%s\">\n", BACKGROUND_COLOUR);
-	fprintf(out, "<meta name=\"keywords\" content=\"%s\">\n", keywords);
-	fprintf(out, "<meta name=\"author\" content=\"%s\">\n", author);
-	fprintf(out, "<meta name=\"description\" content=\"%s\">\n", description);
-	fprintf(out, "<style>%s</style>\n", style);
+	fputs("<meta name=\"theme-color\" content=\""BACKGROUND_COLOUR"\">\n", out);
+	fputs("<meta name=\"author\" content=\""AUTHOR"\">\n", out);
+	fputs("<style>"STYLE"</style>\n", out);
+	fprintf(out, "<meta name=\"keywords\" content=\"%s\">\n", KEYWORDS);
+	fprintf(out, "<meta name=\"description\" content=\"%s\">\n", DESCRIPTION);
 	fprintf(out, "<title>%s</title>\n", title);
-	fprintf(out, "<script src=\"%s\" defer></script>\n", javascriptpath);
+	fprintf(out, "<script src=\""JAVASCRIPTPATH"\" defer></script>\n");
 	fputs("</head>\n", out);
 
 	/* Body */
