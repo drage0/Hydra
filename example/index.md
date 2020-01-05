@@ -15,7 +15,9 @@ Cog, cog... and factoreo?
 
 ¬{sand}S.A.N.D.
 A bunch of text to show how cute this schema is. It's dark, yes, but it also looks really cozy.
-!{res/sand_0.c.jpg}
+
+![sand screenshot](res/sand_0.c.jpg)
+
 This is sand.
 
 Goodbye.

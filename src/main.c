@@ -146,6 +146,38 @@ convert(const char *path)
 				fprintf(out, "<h1>%s</h1>\n", line_trimmed);
 			}
 		}
+		/* Images */
+		else if (line[0] == '!')
+		{
+			char alttext[64], srcpath[64];
+			size_t i, j, len;
+			len = strlen(line+2);
+			j = 0;
+			for (i = 2; i < len; i++)
+			{
+				if (line[i] == ']')
+				{
+					break;
+				}
+				alttext[j] = line[i];
+				j++;
+			}
+			alttext[j] = '\0';
+			j = 0;
+			i += 2; /* Skip ']' and '(' */
+			for (; i <= len; i++)
+			{
+				if (line[i] == ')')
+				{
+					break;
+				}
+				srcpath[j] = line[i];
+				j++;
+			}
+			srcpath[j] = '\0';
+			printf("Image -> alttext: %s\nsrcpath: %s\n", alttext, srcpath);
+			fprintf(out, "<img src=\"%s\" alt=\"%s\">\n", srcpath, alttext);
+		}
 		/* Paragraphs */
 		else
 		{
