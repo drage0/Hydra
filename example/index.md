@@ -2,15 +2,16 @@ TITLE: Hydra
 JAVASCRIPT: res/main.js
 KEYWORDS: Hydra,Software
 DESCRIPTION: Hydra software example.
+~Hydra software example.
+
 # Hydra
-£{Author - Aleksandar Urosevic}
 
 ## -h is for help
 
 The whole point of life is to automate its process, right? No, yes?
 How about a copy/pasted text to offset my writing? No, no.
 
-¬{basilisk}mhm.
+${basilisk}mhm.
 
 Cog, cog... and factoreo?
 

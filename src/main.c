@@ -196,10 +196,22 @@ convert(const char *path)
 			srcpath[j] = '\0';
 			fprintf(out, "<img src=\"%s\" alt=\"%s\">\n", srcpath, alttext);
 		}
-		/* Paragraphs */
+		/*
+		 * Paragraphs
+		 *
+		 * Paragraphs that begin with '~' are considered -fancy text- and they
+		 * have their own style(class).
+		 */
 		else
 		{
-			fprintf(out, "<p>%s</p>\n", line);
+			char *parameters = "";
+			char *text       = line;
+			if (line[0] == '~')
+			{
+				parameters = " class='f'";
+				text       = line+1;
+			}
+			fprintf(out, "<p%s>%s</p>\n", parameters, text);
 		}
 	}
 	fputs("</body>\n", out);
