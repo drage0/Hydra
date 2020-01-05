@@ -151,8 +151,14 @@ convert(const char *path)
 		{
 			char alttext[64], srcpath[64];
 			size_t i, j, len;
+			/*
+			 * ![alternative text](relative/path.gif)
+			 * xx^---------------^
+			 * Starting from offset of 2, find the first occurance of ']'.
+			 * This segment is the alternative text for the image tag.
+			 */
 			len = strlen(line+2);
-			j = 0;
+			j   = 0;
 			for (i = 2; i < len; i++)
 			{
 				if (line[i] == ']')
@@ -163,7 +169,13 @@ convert(const char *path)
 				j++;
 			}
 			alttext[j] = '\0';
-			j = 0;
+			/*
+			 * ![alternative text](relative/path.gif)
+			 *                   xx^----------------^
+			 * Skip two characters denoting the end and start of the new segment.
+			 * Image path is everthing before the letter ')'.
+			 */
+			j  = 0;
 			i += 2; /* Skip ']' and '(' */
 			for (; i <= len; i++)
 			{
@@ -175,7 +187,6 @@ convert(const char *path)
 				j++;
 			}
 			srcpath[j] = '\0';
-			printf("Image -> alttext: %s\nsrcpath: %s\n", alttext, srcpath);
 			fprintf(out, "<img src=\"%s\" alt=\"%s\">\n", srcpath, alttext);
 		}
 		/* Paragraphs */
