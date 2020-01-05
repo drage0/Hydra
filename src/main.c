@@ -71,6 +71,7 @@ a:visited{color:"LINK_VISITCOLOUR"}";
 static char *keywords         = "Hydra,Software";
 static char *author           = "Aleksandar";
 static char *description      = "(denote void)";
+static char *javascriptpath   = "res/main.js";
 static void
 convert(const char *path)
 {
@@ -102,10 +103,11 @@ convert(const char *path)
 	fprintf(out, "<meta name=\"description\" content=\"%s\">\n", description);
 	fprintf(out, "<style>%s</style>\n", style);
 	fprintf(out, "<title>%s</title>\n", title);
+	fprintf(out, "<script src=\"%s\" defer></script>\n", javascriptpath);
 	fputs("</head>\n", out);
 	
 	/* Body */
-	fputs("<body>\n", out);
+	fputs("<body onload=\"bodyloaded()\">\n", out);
 	while (fgets(line, sizeof(line), in) != NULL)
 	{
 		char *line_trimmed;
