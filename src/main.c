@@ -64,6 +64,7 @@ h1{font-size:2.5em}\n\
 h2{font-size:2em;padding-top:1em}\n\
 h3{padding-right: 1em; text-shadow: 1px 2px 0 #111}\n\
 hr{margin-top: 2em; margin-bottom: 2em;border-color:#cfc2aa;color:#cfc2aa}\n\
+img{width:100%;height:auto}\n\
 a{color:"LINK_COLOUR"}\n\
 a:visited{color:"LINK_VISITCOLOUR"}";
 static char *backgroundcolour = "#0d0c0c";
