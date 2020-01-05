@@ -118,7 +118,6 @@ convert(const char *path)
 	fputs("<body onload=\"bodyloaded()\">\n", out);
 	while (fgets(line, sizeof(line), in) != NULL)
 	{
-		char *line_trimmed;
 		line[strcspn(line, "\n")] = '\0';
 
 		/* Skip empty lines. */
@@ -130,6 +129,7 @@ convert(const char *path)
 		/* Headers */
 		if (line[0] == '#')
 		{
+			char *line_trimmed;
 			if (line[1] == '#')
 			{
 				if (line[2] == '#')
