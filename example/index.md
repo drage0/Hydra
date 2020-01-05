@@ -1,5 +1,8 @@
+TITLE: Hydra
+JAVASCRIPT: res/main.js
+KEYWORDS: Hydra,Software
+DESCRIPTION: Hydra software example.
 # Hydra
-
 £{Author - Aleksandar Urosevic}
 
 ## -h is for help

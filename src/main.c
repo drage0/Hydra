@@ -51,11 +51,12 @@ trim(char *str)
 	return trimmed;
 }
 
+#define NO_NEW_LINE(str) str[strcspn(str, "\n")] = '\0';
 static void
 convert(const char *path)
 {
 	size_t len;
-	char outpath[256], line[512], title[64];
+	char outpath[256], line[512], title[64], javascriptpath[64], keywords[64], description[256];
 	FILE *out, *in;
 
 	/* Output path should replace suffix ".md" to ".html" */
@@ -73,7 +74,26 @@ convert(const char *path)
 
 	in  = fopen(path, "r");
 	out = fopen(outpath, "w");
-	strcpy(title, "No title!!!");
+
+	/* Read- title */
+	fgets(line, sizeof(line), in);
+	strcpy(title, line+6);
+	NO_NEW_LINE(title);
+
+	/* Read- javascript path */
+	fgets(line, sizeof(line), in);
+	strcpy(javascriptpath, line+11);
+	NO_NEW_LINE(javascriptpath);
+
+	/* Read- keywords */
+	fgets(line, sizeof(line), in);
+	strcpy(keywords, line+9);
+	NO_NEW_LINE(keywords);
+
+	/* Read- description */
+	fgets(line, sizeof(line), in);
+	strcpy(description, line+12);
+	NO_NEW_LINE(description);
 
 	/* Head */
 	fputs("<!DOCTYPE html>\n", out);
@@ -82,19 +102,19 @@ convert(const char *path)
 	fputs("<meta charset=\"UTF-8\">\n", out);
 	fputs("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n", out);
 	fputs("<meta name=\"theme-color\" content=\""BACKGROUND_COLOUR"\">\n", out);
-	fputs("<meta name=\"author\" content=\""AUTHOR"\">\n", out);
 	fputs("<style>"STYLE"</style>\n", out);
-	fprintf(out, "<meta name=\"keywords\" content=\"%s\">\n", KEYWORDS);
-	fprintf(out, "<meta name=\"description\" content=\"%s\">\n", DESCRIPTION);
-	fprintf(out, "<title>%s</title>\n", title);
-	fprintf(out, "<script src=\""JAVASCRIPTPATH"\" defer></script>\n");
+	fputs("<meta name=\"author\" content=\""AUTHOR"\">\n", out);
+	fprintf(out, "<meta name=\"keywords\" content=\"%s\">\n", trim(keywords));
+	fprintf(out, "<meta name=\"description\" content=\"%s\">\n", trim(description));
+	fprintf(out, "<title>%s</title>\n", trim(title));
+	fprintf(out, "<script src=\"%s\" defer></script>\n", trim(javascriptpath));
 	fputs("</head>\n", out);
 
 	/* Body */
 	fputs("<body onload=\"bodyloaded()\">\n", out);
 	while (fgets(line, sizeof(line), in) != NULL)
 	{
-		line[strcspn(line, "\n")] = '\0';
+		NO_NEW_LINE(line);
 
 		/* Skip empty lines. */
 		if (line[0] == '\0')
