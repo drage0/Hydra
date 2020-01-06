@@ -30,6 +30,6 @@ Goodbye.
 
 ## Links
 
-${github}
+${github} |https://github.com/drage0/Hydra|github link|
 
 Test, test- |https://github.com/drage0/Hydra|github link| test. |https://github.com/drage0/Warg|another github link.|

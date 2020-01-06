@@ -214,18 +214,6 @@ convert(const char *path)
 			/*
 			 * Sprite schema is "${icon}".
 			 */
-			if (line[0] == '$')
-			{
-				char icon[32];
-				size_t iconlength;
-				const char *iconstart = line+2;
-				text = strchr(iconstart, '}')+1;
-				iconlength = text-(iconstart);
-				strncpy(icon, iconstart, iconlength);
-				icon[iconlength-1] = '\0';
-				fprintf(out, "<p><span class='i' id='%s'></span>%s</p>\n", icon, text);
-			}
-			else
 			{
 				char *linestart, text[1024], linkurl[128], linktext[128];
 				size_t i, i_text, i_linkurl, i_linktext, len;
@@ -245,6 +233,7 @@ convert(const char *path)
 				i_text = 0;
 				for (i = 0; i < len; i++)
 				{
+					/* Link special. */
 					if (linestart[i] == '|')
 					{
 						/* Start recording URL. */
@@ -271,6 +260,20 @@ convert(const char *path)
 							strcat(text, linktag);
 							i_text += strlen(linktag);
 						}
+					}
+					/* Sprite special. */
+					else if (linestart[i] == '$')
+					{
+						char icon[32], spantag[64];
+						const char *iconstart = linestart+i+2;
+						const char *iconend   = strchr(iconstart, '}')+1;
+						strncpy(icon, iconstart, iconend-iconstart);
+						icon[iconend-iconstart-1] = '\0';
+						snprintf(spantag, 64, "<span class='i' id='%s'></span>", icon);
+						text[i_text] = '\0';
+						strcat(text, spantag);
+						i_text += strlen(spantag);
+						i      += strlen(icon)+2;
 					}
 					else
 					{
