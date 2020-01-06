@@ -227,11 +227,71 @@ convert(const char *path)
 			}
 			else
 			{
+				char *linestart, text[1024], linkurl[128], linktext[128];
+				size_t i, i_text, i_linkurl, i_linktext, len;
+				int record = 0;
 				if (line[0] == '~')
 				{
 					parameters = " class='f'";
-					text       = line+1;
+					linestart  = line+1;
+					strcpy(text, linestart);
 				}
+				else
+				{
+					linestart = line;
+				}
+				len = strlen(line);
+				/* */
+				i_text = 0;
+				for (i = 0; i < len; i++)
+				{
+					if (linestart[i] == '|')
+					{
+						/* Start recording URL. */
+						if (record == 0)
+						{
+							i_linkurl = i_linktext = 0;
+							record = 1;
+						}
+						/* Start recording link text. */
+						else if (record == 1)
+						{
+							linkurl[i_linkurl] = '\0';
+							record = 2;
+						}
+						/* Stop recording link. (finished) */
+						else if (record == 2)
+						{
+							char linktag[256];
+							linktext[i_linktext] = '\0';
+							record = 0;
+							snprintf(linktag, 256, "<a href=\"%s\">%s</a>", linkurl, linktext);
+							printf("Link text: %s\n", linktext);
+							text[i_text] = '\0';
+							strcat(text, linktag);
+							i_text += strlen(linktag);
+						}
+					}
+					else
+					{
+						if (record == 0)
+						{
+							text[i_text] = linestart[i];
+							i_text++;
+						}
+						else if (record == 1)
+						{
+							linkurl[i_linkurl] = linestart[i];
+							i_linkurl++;
+						}
+						else if (record == 2)
+						{
+							linktext[i_linktext] = linestart[i];
+							i_linktext++;
+						}
+					}
+				}
+				text[i_text] = '\0'; /* Close this paragraph. */
 				fprintf(out, "<p%s>%s</p>\n", parameters, text);
 			}
 		}

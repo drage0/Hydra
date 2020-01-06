@@ -28,4 +28,8 @@ This is sand.
 
 Goodbye.
 
-${github} |https://github.com/drage0/Hydra|github link|
+## Links
+
+${github}
+
+Test, test- |https://github.com/drage0/Hydra|github link| test. |https://github.com/drage0/Warg|another github link.|
