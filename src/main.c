@@ -56,7 +56,7 @@ static void
 convert(const char *path)
 {
 	size_t len;
-	char outpath[256], line[512], title[64], javascriptpath[64], keywords[64], description[256];
+	char outpath[256], line[512], title[64], javascriptpath[64], keywords[64], description[256], spritesheet[64];
 	FILE *out, *in;
 
 	/* Output path should replace suffix ".md" to ".html" */
@@ -95,6 +95,11 @@ convert(const char *path)
 	strcpy(description, line+12);
 	NO_NEW_LINE(description);
 
+	/* Read- sprite sheet */
+	fgets(line, sizeof(line), in);
+	strcpy(spritesheet, line+8);
+	NO_NEW_LINE(spritesheet);
+
 	/* Head */
 	fputs("<!DOCTYPE html>\n", out);
 	fputs("<html>\n", out);
@@ -102,11 +107,11 @@ convert(const char *path)
 	fputs("<meta charset=\"UTF-8\">\n", out);
 	fputs("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n", out);
 	fputs("<meta name=\"theme-color\" content=\""BACKGROUND_COLOUR"\">\n", out);
-	fputs("<style>"STYLE"</style>\n", out);
 	fputs("<meta name=\"author\" content=\""AUTHOR"\">\n", out);
 	fprintf(out, "<meta name=\"keywords\" content=\"%s\">\n", trim(keywords));
 	fprintf(out, "<meta name=\"description\" content=\"%s\">\n", trim(description));
 	fprintf(out, "<title>%s</title>\n", trim(title));
+	fprintf(out, "<style>"STYLE"</style>\n", trim(spritesheet));
 	fprintf(out, "<script src=\"%s\" defer></script>\n", trim(javascriptpath));
 	fputs("</head>\n", out);
 
@@ -206,12 +211,29 @@ convert(const char *path)
 		{
 			char *parameters = "";
 			char *text       = line;
-			if (line[0] == '~')
+			/*
+			 * Sprite schema is "${icon}".
+			 */
+			if (line[0] == '$')
 			{
-				parameters = " class='f'";
-				text       = line+1;
+				char icon[32];
+				size_t iconlength;
+				const char *iconstart = line+2;
+				text = strchr(iconstart, '}')+1;
+				iconlength = text-(iconstart);
+				strncpy(icon, iconstart, iconlength);
+				icon[iconlength-1] = '\0';
+				fprintf(out, "<p><span class='i' id='%s'></span>%s</p>\n", icon, text);
 			}
-			fprintf(out, "<p%s>%s</p>\n", parameters, text);
+			else
+			{
+				if (line[0] == '~')
+				{
+					parameters = " class='f'";
+					text       = line+1;
+				}
+				fprintf(out, "<p%s>%s</p>\n", parameters, text);
+			}
 		}
 	}
 	fputs("</body>\n", out);

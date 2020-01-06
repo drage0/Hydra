@@ -2,6 +2,7 @@ TITLE: Лернејска хидра
 JAVASCRIPT: ../res/main.js
 KEYWORDS: Лернејска хидра,Митологија
 DESCRIPTION: -
+SPRITES: res/sheet.gif
 # Лернејска хидра
 
 Из Википедије, слободне енциклопедије

@@ -2,6 +2,7 @@ TITLE: Hydra
 JAVASCRIPT: res/main.js
 KEYWORDS: Hydra,Software
 DESCRIPTION: Hydra software example.
+SPRITES: res/sheet.gif
 ~Hydra software example.
 
 # Hydra
@@ -17,8 +18,9 @@ Cog, cog... and factoreo?
 
 ## Images
 
-¬{sand}S.A.N.D.
-A bunch of text to show how cute this schema is. It's dark, yes, but it also looks really cozy.
+Here we show a highly compressed image. But fear not for the higher resolution image will start to load and show itself once the mouse hoves over the compressed one!
+
+The alt-text also exists.
 
 ![sand screenshot](res/sand_0.c.jpg)
 
@@ -26,3 +28,4 @@ This is sand.
 
 Goodbye.
 
+${github} |https://github.com/drage0/Hydra|github link|
