@@ -10,7 +10,7 @@
 #define BACKGROUND_COLOUR "#353C51"
 #define AUTHOR "Aleksandar"
 /* Charcater '%' has to be written as '%%' for it to not be recognised as a conversion charcater. */
-#define STYLE "html{background:url(\"res/qiron_seam.jpg\");background-color:"BACKGROUND_COLOUR";background-repeat:repeat;font-family:\"Linux Libertine O\", \"Liberation Serif\", \"Times New Roman\", Times, serif;}\n\
+#define STYLE "html{background:url(\"res/bg.jpg\");background-color:"BACKGROUND_COLOUR";background-repeat:repeat;font-family:\"Linux Libertine O\", \"Liberation Serif\", \"Times New Roman\", Times, serif;}\n\
 body{margin:2em auto;max-width:"PAGE_WIDTH";line-height:1.6;font-size:1.2em;color:"TEXT_COLOUR";padding:0 10px;image-rendering:pixelated;image-rendering:crisp-edges}\
 h1, h2{line-height:1.2; text-shadow: 2px 3px 0 #111}\n\
 h1{font-size:2.5em}\n\
