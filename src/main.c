@@ -57,7 +57,7 @@ convert(const char *path)
 {
 	size_t len;
 	char outpath[256], line[512], title[64], javascriptpath[64], keywords[64], description[256], spritesheet[64];
-	int recordlist;
+	int recordlist, rawhtml;
 	FILE *out, *in;
 
 	/* Output path should replace suffix ".md" to ".html" */
@@ -118,7 +118,7 @@ convert(const char *path)
 
 	/* Body */
 	fputs("<body onload=\"bodyloaded()\">\n", out);
-	recordlist = 0;
+	recordlist = rawhtml = 0;
 	while (fgets(line, sizeof(line), in) != NULL)
 	{
 		NO_NEW_LINE(line);
@@ -214,109 +214,117 @@ convert(const char *path)
 			fputs((recordlist ? "<ul>" : "</ul>"), out);
 		}
 		/*
+		 * Raw html
+		 */
+		else if (line[0] == '&')
+		{
+			rawhtml = 1-rawhtml;
+		}
+		/*
 		 * Paragraphs
 		 *
 		 * Paragraphs that begin with '~' are considered -fancy text- and they
 		 * have their own style(class).
 		 */
-		else
+		else if (!rawhtml)
 		{
 			char *parameters = "";
-			char *text       = line;
 			/*
 			 * Sprite schema is "${icon}".
 			 */
+			char *linestart, text[1024], linkurl[128], linktext[128];
+			size_t i, i_text, i_linkurl, i_linktext, len;
+			int record = 0;
+			if (line[0] == '~')
 			{
-				char *linestart, text[1024], linkurl[128], linktext[128];
-				size_t i, i_text, i_linkurl, i_linktext, len;
-				int record = 0;
-				if (line[0] == '~')
+				parameters = " class='f'";
+				linestart  = line+1;
+				strcpy(text, linestart);
+			}
+			else
+			{
+				linestart = line;
+			}
+			len = strlen(line);
+			/* */
+			i_text = 0;
+			for (i = 0; i < len; i++)
+			{
+				/* Link special. */
+				if (linestart[i] == '|')
 				{
-					parameters = " class='f'";
-					linestart  = line+1;
-					strcpy(text, linestart);
-				}
-				else
-				{
-					linestart = line;
-				}
-				len = strlen(line);
-				/* */
-				i_text = 0;
-				for (i = 0; i < len; i++)
-				{
-					/* Link special. */
-					if (linestart[i] == '|')
+					/* Start recording URL. */
+					if (record == 0)
 					{
-						/* Start recording URL. */
-						if (record == 0)
-						{
-							i_linkurl = i_linktext = 0;
-							record = 1;
-						}
-						/* Start recording link text. */
-						else if (record == 1)
-						{
-							linkurl[i_linkurl] = '\0';
-							record = 2;
-						}
-						/* Stop recording link. (finished) */
-						else if (record == 2)
-						{
-							char linktag[256];
-							linktext[i_linktext] = '\0';
-							record = 0;
-							snprintf(linktag, 256, "<a href=\"%s\">%s</a>", linkurl, linktext);
-							printf("Link text: %s\n", linktext);
-							text[i_text] = '\0';
-							strcat(text, linktag);
-							i_text += strlen(linktag);
-						}
+						i_linkurl = i_linktext = 0;
+						record = 1;
 					}
-					/* Sprite special. */
-					else if (linestart[i] == '$')
+					/* Start recording link text. */
+					else if (record == 1)
 					{
-						char icon[32], spantag[64];
-						const char *iconstart = linestart+i+2;
-						const char *iconend   = strchr(iconstart, '}')+1;
-						strncpy(icon, iconstart, iconend-iconstart);
-						icon[iconend-iconstart-1] = '\0';
-						snprintf(spantag, 64, "<span class='i' id='%s'></span>", icon);
+						linkurl[i_linkurl] = '\0';
+						record = 2;
+					}
+					/* Stop recording link. (finished) */
+					else if (record == 2)
+					{
+						char linktag[256];
+						linktext[i_linktext] = '\0';
+						record = 0;
+						snprintf(linktag, 256, "<a href=\"%s\">%s</a>", linkurl, linktext);
+						printf("Link text: %s\n", linktext);
 						text[i_text] = '\0';
-						strcat(text, spantag);
-						i_text += strlen(spantag);
-						i      += strlen(icon)+2;
-					}
-					/* Ordinary letter, can be part of a recorded sequence. */
-					else
-					{
-						if (record == 0)
-						{
-							text[i_text] = linestart[i];
-							i_text++;
-						}
-						else if (record == 1)
-						{
-							linkurl[i_linkurl] = linestart[i];
-							i_linkurl++;
-						}
-						else if (record == 2)
-						{
-							linktext[i_linktext] = linestart[i];
-							i_linktext++;
-						}
+						strcat(text, linktag);
+						i_text += strlen(linktag);
 					}
 				}
-				text[i_text] = '\0'; /* Close this paragraph. */
-				if (recordlist)
+				/* Sprite special. */
+				else if (linestart[i] == '$')
 				{
-					fprintf(out, "<li%s>%s</li>\n", parameters, text);
+					char icon[32], spantag[64];
+					const char *iconstart = linestart+i+2;
+					const char *iconend   = strchr(iconstart, '}')+1;
+					strncpy(icon, iconstart, iconend-iconstart);
+					icon[iconend-iconstart-1] = '\0';
+					snprintf(spantag, 64, "<span class='i' id='%s'></span>", icon);
+					text[i_text] = '\0';
+					strcat(text, spantag);
+					i_text += strlen(spantag);
+					i      += strlen(icon)+2;
 				}
+				/* Ordinary letter, can be part of a recorded sequence. */
 				else
 				{
-					fprintf(out, "<p%s>%s</p>\n", parameters, text);
+					if (record == 0)
+					{
+						text[i_text] = linestart[i];
+						i_text++;
+					}
+					else if (record == 1)
+					{
+						linkurl[i_linkurl] = linestart[i];
+						i_linkurl++;
+					}
+					else if (record == 2)
+					{
+						linktext[i_linktext] = linestart[i];
+						i_linktext++;
+					}
 				}
 			}
+			text[i_text] = '\0'; /* Close this paragraph. */
+			if (recordlist)
+			{
+				fprintf(out, "<li%s>%s</li>\n", parameters, text);
+			}
+			else
+			{
+				fprintf(out, "<p%s>%s</p>\n", parameters, text);
+			}
+		}
+		else
+		{
+			fputs(line, out);
 		}
 	}
 	fputs("</body>\n", out);
