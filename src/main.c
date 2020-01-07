@@ -57,6 +57,7 @@ convert(const char *path)
 {
 	size_t len;
 	char outpath[256], line[512], title[64], javascriptpath[64], keywords[64], description[256], spritesheet[64];
+	int recordlist;
 	FILE *out, *in;
 
 	/* Output path should replace suffix ".md" to ".html" */
@@ -117,6 +118,7 @@ convert(const char *path)
 
 	/* Body */
 	fputs("<body onload=\"bodyloaded()\">\n", out);
+	recordlist = 0;
 	while (fgets(line, sizeof(line), in) != NULL)
 	{
 		NO_NEW_LINE(line);
@@ -202,6 +204,16 @@ convert(const char *path)
 			fprintf(out, "<img src=\"%s\" alt=\"%s\">\n", srcpath, alttext);
 		}
 		/*
+		 * List
+		 *
+		 * recordlist of 1 will make the upcoming paragraphs output a list item, "<li>", instead of "<p>".
+		 */
+		else if (line[0] == '%')
+		{
+			recordlist = 1-recordlist;
+			fputs((recordlist ? "<ul>" : "</ul>"), out);
+		}
+		/*
 		 * Paragraphs
 		 *
 		 * Paragraphs that begin with '~' are considered -fancy text- and they
@@ -275,6 +287,7 @@ convert(const char *path)
 						i_text += strlen(spantag);
 						i      += strlen(icon)+2;
 					}
+					/* Ordinary letter, can be part of a recorded sequence. */
 					else
 					{
 						if (record == 0)
@@ -295,7 +308,14 @@ convert(const char *path)
 					}
 				}
 				text[i_text] = '\0'; /* Close this paragraph. */
-				fprintf(out, "<p%s>%s</p>\n", parameters, text);
+				if (recordlist)
+				{
+					fprintf(out, "<li%s>%s</li>\n", parameters, text);
+				}
+				else
+				{
+					fprintf(out, "<p%s>%s</p>\n", parameters, text);
+				}
 			}
 		}
 	}
