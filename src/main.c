@@ -214,6 +214,13 @@ convert(const char *path)
 			fputs((recordlist ? "<ul>" : "</ul>"), out);
 		}
 		/*
+		 * Horizontal line
+		 */
+		else if (strlen(line) >= 3 && line[0] == '-' && line[1] == '-' && line[2] == '-')
+		{
+			fputs("<hr>\n", out);
+		}
+		/*
 		 * Raw html
 		 */
 		else if (line[0] == '&')
