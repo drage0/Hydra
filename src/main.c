@@ -325,6 +325,7 @@ convert(const char *path)
 		else
 		{
 			fputs(line, out);
+			fputs("\n", out);
 		}
 	}
 	fputs("</body>\n", out);
