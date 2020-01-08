@@ -1,18 +1,43 @@
 # Hydra
 
-Write out HTML from (modified) Markdown.
+Write out HTML from textual files.
 
-## Clarity
+## Syntax
 
-The software is very simple to understand. Go ahead and change it to suit your needs.
+By default, the syntax is reminiscent of Markdown.
 
-## Markdown language
+Link example- `|github.com|GitHub is here!|`
 
-By default, the Markdown language Hydra converts is modified. It has limitations.
+Image example- `![image description or alt-text](path/to/file)`
+
+Fancy text- `~This whole line uses special CSS defined in "configuration.h".`
+
+Sprite- `~{CSSclass} additional text next to the sprite.`
+
+Horizontal rule- `---`
+
+Unordered list example-
+
+```
+ %
+ Milk
+ Egg
+ Flour
+ %
+```
+
+Raw HTML-
+
+```
+ &
+ <!-- All this content will be copied to the output document. -->
+ <script>console.log("Hei!");</script>
+ &
+```
 
 ### Images
 
-All images *must* be on a separate line.
+All images **must** be on a separate line.
 
 ### Sprites (inline images)
 
@@ -36,10 +61,16 @@ Example:
 ~Whoa i'm huge!
 ```
 
-.h:
+configuration.h:
 
 ```
 #define STYLE …
 .f{font-size:4.0em; text-align:center}\
 …
 ```
+
+## Example documents or templates
+
+The example documents can be found in `example` directory.
+
+![(screenshot)](example.jpg)
