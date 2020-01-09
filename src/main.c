@@ -289,12 +289,12 @@ convert(const char *path)
 				/* Sprite special. */
 				else if (linestart[i] == '$')
 				{
-					char icon[32], spantag[64];
+					char icon[SPRITE_LENGHT_MAX], spantag[SPRITE_LENGHT_MAX];
 					const char *iconstart = linestart+i+2;
 					const char *iconend   = strchr(iconstart, '}')+1;
 					strncpy(icon, iconstart, iconend-iconstart);
 					icon[iconend-iconstart-1] = '\0';
-					snprintf(spantag, 64, "<span class='i' id='%s'></span>", icon);
+					snprintf(spantag, SPAN_TAG_LENGTH_MAX, "<span class='i' id='%s'></span>", icon);
 					text[i_text] = '\0';
 					strcat(text, spantag);
 					i_text += strlen(spantag);
