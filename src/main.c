@@ -109,6 +109,7 @@ convert(const char *path)
 	fputs("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n", out);
 	fputs("<meta name=\"theme-color\" content=\""BACKGROUND_COLOUR"\">\n", out);
 	fputs("<meta name=\"author\" content=\""AUTHOR"\">\n", out);
+	fputs("<link rel=\"icon\" href=\""FAVICON"\" type=\"image/gif\">\n", out);
 	fprintf(out, "<meta name=\"keywords\" content=\"%s\">\n", trim(keywords));
 	fprintf(out, "<meta name=\"description\" content=\"%s\">\n", trim(description));
 	fprintf(out, "<title>%s</title>\n", trim(title));
