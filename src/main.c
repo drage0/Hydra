@@ -130,39 +130,8 @@ convert(const char *path)
 			continue;
 		}
 
-		/* Headers */
-		if (trim(line)[0] == '#')
-		{
-			char *line_trimmed;
-			if (line[1] == '#')
-			{
-				if (line[2] == '#')
-				{
-					if (line[3] == '#')
-					{
-						line_trimmed = trim(line+4);
-						fprintf(out, "<h4>%s</h4>\n", line_trimmed);
-					}
-					else
-					{
-						line_trimmed = trim(line+3);
-						fprintf(out, "<h3>%s</h3>\n", line_trimmed);
-					}
-				}
-				else
-				{
-					line_trimmed = trim(line+2);
-					fprintf(out, "<h2>%s</h2>\n", line_trimmed);
-				}
-			}
-			else
-			{
-				line_trimmed = trim(line+1);
-				fprintf(out, "<h1>%s</h1>\n", line_trimmed);
-			}
-		}
 		/* Images */
-		else if (line[0] == '!')
+		if (line[0] == '!')
 		{
 			char alttext[64], srcpath[64];
 			size_t i, j, len;
@@ -237,23 +206,51 @@ convert(const char *path)
 		else if (!rawhtml)
 		{
 			char *parameters = "";
-			char *linestart;
+			char *linestart = line, *tag;
 			size_t i, len;
 
 			/* Paragraphs beginning with '~' have their own class. */
 			if (line[0] == '~')
 			{
 				parameters = " class='f'";
-				linestart  = line+1;
+				linestart += 1;
 			}
-			else
+
+			/* If paragraph begins with '#', consider it as a header. */
+			tag = "p";
+			if (line[0] == '#')
 			{
-				linestart = line;
+				if (line[1] == '#')
+				{
+					if (line[2] == '#')
+					{
+						if (line[3] == '#')
+						{
+							tag = "h4";
+							linestart = line+4;
+						}
+						else
+						{
+							tag = "h3";
+							linestart = line+3;
+						}
+					}
+					else
+					{
+						tag = "h2";
+						linestart = line+2;
+					}
+				}
+				else
+				{
+					tag = "h1";
+					linestart = line+1;
+				}
 			}
-			len = strlen(line);
 
 			/* Begin tag */
-			recordlist ? fprintf(out, "<li%s>", parameters) : fprintf(out, "<p%s>", parameters);
+			recordlist ? fprintf(out, "<li%s>", parameters) : fprintf(out, "<%s%s>", tag, parameters);
+			len = strlen(linestart);
 			for (i = 0; i < len; i++)
 			{
 				/*
@@ -272,8 +269,16 @@ convert(const char *path)
 				if (linestart[i] == '|')
 				{
 					char * const urlbegin = linestart+i+1;
-					char * const urlend   = strchr(urlbegin, '|');
-					char * const txtend   = strchr(urlend+1, '|');
+					char *urlend, *txtend;
+
+					/* Malformed URLs will be printed as they are, without the link tag. */
+					if (((urlend = strchr(urlbegin, '|')) && (txtend = strchr(urlend+1, '|'))) == 0)
+					{
+						fprintf(stderr, "Malformed link (missing '|'): %s\n", urlbegin);
+						fputs(urlbegin, out);
+						i += strlen(urlbegin);
+						break;
+					}
 					*urlend = '\0';
 					*txtend = '\0';
 
@@ -286,10 +291,9 @@ convert(const char *path)
 
 					/*
 					 * Advance the read index in this parsing line.
-					 * txtend-(linestart+i+1)+1 - length of parsed string.
-					 * Hence, we move to txtend-(linestart+i+1)+2.
+					 * txtend-(linestart+i+1)+1 is the length of the parsed string.
 					 */
-					i += txtend-(linestart+i+1)+2;
+					i += txtend-(linestart+i+1)+1;
 				}
 				/* Sprite special. */
 				else if (linestart[i] == '$')
@@ -309,7 +313,7 @@ convert(const char *path)
 				}
 			}
 			/* End tag */
-			recordlist ? fputs("</li>\n", out) : fputs("</p>\n", out);
+			recordlist ? fputs("</li>\n", out) : fprintf(out, "</%s>\n", tag);
 		}
 		else
 		{
