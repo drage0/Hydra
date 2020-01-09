@@ -253,14 +253,7 @@ convert(const char *path)
 			}
 			len = strlen(line);
 			/* Begin tag */
-			if (recordlist)
-			{
-				fprintf(out, "<li%s>", parameters);
-			}
-			else
-			{
-				fprintf(out, "<p%s>", parameters);
-			}
+			recordlist ? fprintf(out, "<li%s>", parameters) : fprintf(out, "<p%s>", parameters);
 			for (i = 0; i < len; i++)
 			{
 				/*
@@ -314,14 +307,7 @@ convert(const char *path)
 				}
 			}
 			/* End tag */
-			if (recordlist)
-			{
-				fprintf(out, "</li>\n", parameters);
-			}
-			else
-			{
-				fprintf(out, "</p>\n", parameters);
-			}
+			recordlist ? fputs("</li>\n", out) : fputs("</p>\n", out);
 		}
 		else
 		{
