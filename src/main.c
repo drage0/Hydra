@@ -237,11 +237,10 @@ convert(const char *path)
 		else if (!rawhtml)
 		{
 			char *parameters = "";
-			/*
-			 * Sprite schema is "${icon}".
-			 */
 			char *linestart;
 			size_t i, len;
+
+			/* Paragraphs beginning with '~' have their own class. */
 			if (line[0] == '~')
 			{
 				parameters = " class='f'";
@@ -252,6 +251,7 @@ convert(const char *path)
 				linestart = line;
 			}
 			len = strlen(line);
+
 			/* Begin tag */
 			recordlist ? fprintf(out, "<li%s>", parameters) : fprintf(out, "<p%s>", parameters);
 			for (i = 0; i < len; i++)
