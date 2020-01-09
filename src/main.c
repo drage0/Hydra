@@ -294,7 +294,7 @@ convert(const char *path)
 					fputs("</a>", out);
 
 					/* Advance the read index in this parsing line. */
-					i += urllen+txtlen+1;
+					i += urllen+txtlen+2;
 				}
 				/* Sprite special. */
 				else if (linestart[i] == '$')
@@ -316,11 +316,11 @@ convert(const char *path)
 			/* End tag */
 			if (recordlist)
 			{
-				fprintf(out, "</li>", parameters);
+				fprintf(out, "</li>\n", parameters);
 			}
 			else
 			{
-				fprintf(out, "</p>", parameters);
+				fprintf(out, "</p>\n", parameters);
 			}
 		}
 		else
