@@ -3,6 +3,7 @@
  * PAGE_WIDTH defines the maximum width of the line.
  * TEXT_COLOUR defines the colour of the text.
  */
+#define LANGUAGE "en"
 #define PAGE_WIDTH "42em"
 #define TEXT_COLOUR "#fff2da"
 #define LINK_COLOUR "#fa4040"

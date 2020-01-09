@@ -103,7 +103,7 @@ convert(const char *path)
 
 	/* Head */
 	fputs("<!DOCTYPE html>\n", out);
-	fputs("<html>\n", out);
+	fputs("<html lang=\""LANGUAGE"\">\n", out);
 	fputs("<head>\n", out);
 	fputs("<meta charset=\"UTF-8\">\n", out);
 	fputs("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n", out);
