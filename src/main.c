@@ -240,110 +240,87 @@ convert(const char *path)
 			/*
 			 * Sprite schema is "${icon}".
 			 */
-			char *linestart, text[PARAGRAPH_LENGTH_MAX], linkurl[LINK_URL_LENGTH_MAX], linktext[LINK_TEXT_LENGTH_MAX];
-			size_t i, i_text, i_linkurl, i_linktext, len;
-			int record = 0;
+			char *linestart;
+			size_t i, len;
 			if (line[0] == '~')
 			{
 				parameters = " class='f'";
 				linestart  = line+1;
-				strcpy(text, linestart);
 			}
 			else
 			{
 				linestart = line;
 			}
 			len = strlen(line);
-			/* */
-			i_text = 0;
+			/* Begin tag */
+			if (recordlist)
+			{
+				fprintf(out, "<li%s>", parameters);
+			}
+			else
+			{
+				fprintf(out, "<p%s>", parameters);
+			}
 			for (i = 0; i < len; i++)
 			{
 				/*
 				 * Link special. (<a> tag)
 				 *
-				 * Schema: |the.url|shown text|
+				 * Schema:
+				 * |the.url|shown text|
+				 *  +----->0--------->0
 				 *
-				 * When '|' is hit and record == 0, reset the <a> tag recorder
-				 * and set record to 1.
-				 * Whilst record == 1, fill the linkurl with the current
-				 * letter. When the '|' is reached, record becomes 2.
-				 * Whilst record == 2, fill the linktext with the current
-				 * letter. When the '|' is reached, record becomes 0 and the
-				 * <a> tag is printed on the document.
+				 * By setting the '|' chracters to NULL,
+				 * string (linestart+i+1) will be the URL,
+				 * string (urlend+1) will be the shown text.
 				 *
+				 * The first letter of the URL is located at linestart+i+1.
 				 */
 				if (linestart[i] == '|')
 				{
-					/* Start recording URL. */
-					if (record == 0)
-					{
-						i_linkurl = i_linktext = 0;
-						record = 1;
-					}
-					/* Start recording link text. */
-					else if (record == 1)
-					{
-						linkurl[i_linkurl] = '\0';
-						record = 2;
-					}
-					/* Stop recording link. (finished) */
-					else if (record == 2)
-					{
-						char linktag[LINK_TAG_LENGTH_MAX];
-						linktext[i_linktext] = '\0';
-						record = 0;
-						snprintf(linktag, LINK_TAG_LENGTH_MAX, "<a href=\"%s\">%s</a>", linkurl, linktext);
-						printf("Link text: %s\n", linktext);
-						text[i_text] = '\0';
-						strcat(text, linktag);
-						i_text += strlen(linktag);
-					}
+					char * const urlbegin = linestart+i+1;
+					char * const urlend = strchr(urlbegin, '|');
+					char * const txtend = strchr(urlend+1, '|');
+					const size_t urllen = urlend-(urlbegin);
+					const size_t txtlen = txtend-(urlend+1);
+					*urlend = '\0';
+					*txtend = '\0';
+
+					/* Write out... */
+					fputs("<a href=\"", out);
+					fputs(urlbegin, out);
+					fputs("\">", out);
+					fputs(urlend+1, out);
+					fputs("</a>", out);
+
+					/* Advance the read index in this parsing line. */
+					i += urllen+txtlen+1;
 				}
 				/* Sprite special. */
 				else if (linestart[i] == '$')
 				{
-					char icon[SPRITE_LENGHT_MAX], spantag[SPRITE_LENGHT_MAX];
+					char icon[SPRITE_LENGHT_MAX];
 					const char *iconstart = linestart+i+2;
 					const char *iconend   = strchr(iconstart, '}')+1;
 					strncpy(icon, iconstart, iconend-iconstart);
 					icon[iconend-iconstart-1] = '\0';
-					snprintf(spantag, SPAN_TAG_LENGTH_MAX, "<span class='i' id='%s'></span>", icon);
-					text[i_text] = '\0';
-					strcat(text, spantag);
-					i_text += strlen(spantag);
-					i      += strlen(icon)+2;
+					fprintf(out, "<span class='i' id='%s'></span>", icon);
+					i += strlen(icon)+2;
 				}
-				/* Ordinary letter, can be part of a recorded sequence. */
+				/* Ordinary letter. */
 				else
 				{
-					/* Ordinary paragraph letter. */
-					if (record == 0)
-					{
-						text[i_text] = linestart[i];
-						i_text++;
-					}
-					/* Part of link tag's URL. */
-					else if (record == 1)
-					{
-						linkurl[i_linkurl] = linestart[i];
-						i_linkurl++;
-					}
-					/* Part of link tag's shown text. */
-					else if (record == 2)
-					{
-						linktext[i_linktext] = linestart[i];
-						i_linktext++;
-					}
+					fputc(linestart[i], out);
 				}
 			}
-			text[i_text] = '\0'; /* Close this paragraph. */
+			/* End tag */
 			if (recordlist)
 			{
-				fprintf(out, "<li%s>%s</li>\n", parameters, text);
+				fprintf(out, "</li>", parameters);
 			}
 			else
 			{
-				fprintf(out, "<p%s>%s</p>\n", parameters, text);
+				fprintf(out, "</p>", parameters);
 			}
 		}
 		else
