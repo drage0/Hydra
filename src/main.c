@@ -279,7 +279,7 @@ convert(const char *path)
 						char linktag[LINK_TAG_LENGTH_MAX];
 						linktext[i_linktext] = '\0';
 						record = 0;
-						snprintf(linktag, LINK_TAG_LENGTH_MAX, "<a href=\"%s\">%s</a>", linkurl, linktext);
+						snprintf(linktag, LINK_TAG_LENGTH_MAX, "<a href=\"%s\" rel=\"noreferrer\">%s</a>", linkurl, linktext);
 						printf("Link text: %s\n", linktext);
 						text[i_text] = '\0';
 						strcat(text, linktag);
