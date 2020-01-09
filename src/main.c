@@ -258,7 +258,20 @@ convert(const char *path)
 			i_text = 0;
 			for (i = 0; i < len; i++)
 			{
-				/* Link special. */
+				/*
+				 * Link special. (<a> tag)
+				 *
+				 * Schema: |the.url|shown text|
+				 *
+				 * When '|' is hit and record == 0, reset the <a> tag recorder
+				 * and set record to 1.
+				 * Whilst record == 1, fill the linkurl with the current
+				 * letter. When the '|' is reached, record becomes 2.
+				 * Whilst record == 2, fill the linktext with the current
+				 * letter. When the '|' is reached, record becomes 0 and the
+				 * <a> tag is printed on the document.
+				 *
+				 */
 				if (linestart[i] == '|')
 				{
 					/* Start recording URL. */
@@ -279,7 +292,7 @@ convert(const char *path)
 						char linktag[LINK_TAG_LENGTH_MAX];
 						linktext[i_linktext] = '\0';
 						record = 0;
-						snprintf(linktag, LINK_TAG_LENGTH_MAX, "<a href=\"%s\" rel=\"noreferrer\">%s</a>", linkurl, linktext);
+						snprintf(linktag, LINK_TAG_LENGTH_MAX, "<a href=\"%s\">%s</a>", linkurl, linktext);
 						printf("Link text: %s\n", linktext);
 						text[i_text] = '\0';
 						strcat(text, linktag);
@@ -303,16 +316,19 @@ convert(const char *path)
 				/* Ordinary letter, can be part of a recorded sequence. */
 				else
 				{
+					/* Ordinary paragraph letter. */
 					if (record == 0)
 					{
 						text[i_text] = linestart[i];
 						i_text++;
 					}
+					/* Part of link tag's URL. */
 					else if (record == 1)
 					{
 						linkurl[i_linkurl] = linestart[i];
 						i_linkurl++;
 					}
+					/* Part of link tag's shown text. */
 					else if (record == 2)
 					{
 						linktext[i_linktext] = linestart[i];
