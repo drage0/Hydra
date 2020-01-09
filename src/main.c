@@ -272,10 +272,8 @@ convert(const char *path)
 				if (linestart[i] == '|')
 				{
 					char * const urlbegin = linestart+i+1;
-					char * const urlend = strchr(urlbegin, '|');
-					char * const txtend = strchr(urlend+1, '|');
-					const size_t urllen = urlend-(urlbegin);
-					const size_t txtlen = txtend-(urlend+1);
+					char * const urlend   = strchr(urlbegin, '|');
+					char * const txtend   = strchr(urlend+1, '|');
 					*urlend = '\0';
 					*txtend = '\0';
 
@@ -286,8 +284,12 @@ convert(const char *path)
 					fputs(urlend+1, out);
 					fputs("</a>", out);
 
-					/* Advance the read index in this parsing line. */
-					i += urllen+txtlen+2;
+					/*
+					 * Advance the read index in this parsing line.
+					 * txtend-(linestart+i+1)+1 - length of parsed string.
+					 * Hence, we move to txtend-(linestart+i+1)+2.
+					 */
+					i += txtend-(linestart+i+1)+2;
 				}
 				/* Sprite special. */
 				else if (linestart[i] == '$')
