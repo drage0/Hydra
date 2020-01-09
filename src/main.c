@@ -56,7 +56,7 @@ static void
 convert(const char *path)
 {
 	size_t len;
-	char outpath[256], line[512], title[64], javascriptpath[64], keywords[64], description[256], spritesheet[64];
+	char outpath[WORKINGFILE_PATH_LENGHT_MAX], line[LINE_LENGTH_MAX], title[TITLE_LENGTH_MAX], javascriptpath[JS_LENGTH_MAX], keywords[KEYWORDS_LENGTH_MAX], description[DESCRIPTION_LENGTH_MAX], spritesheet[SPRITESHEET_LENGTH_MAX];
 	int recordlist, rawhtml;
 	FILE *out, *in;
 
@@ -240,7 +240,7 @@ convert(const char *path)
 			/*
 			 * Sprite schema is "${icon}".
 			 */
-			char *linestart, text[1024], linkurl[128], linktext[128];
+			char *linestart, text[PARAGRAPH_LENGTH_MAX], linkurl[LINK_URL_LENGTH_MAX], linktext[LINK_TEXT_LENGTH_MAX];
 			size_t i, i_text, i_linkurl, i_linktext, len;
 			int record = 0;
 			if (line[0] == '~')
@@ -276,10 +276,10 @@ convert(const char *path)
 					/* Stop recording link. (finished) */
 					else if (record == 2)
 					{
-						char linktag[256];
+						char linktag[LINK_TAG_LENGTH_MAX];
 						linktext[i_linktext] = '\0';
 						record = 0;
-						snprintf(linktag, 256, "<a href=\"%s\">%s</a>", linkurl, linktext);
+						snprintf(linktag, LINK_TAG_LENGTH_MAX, "<a href=\"%s\">%s</a>", linkurl, linktext);
 						printf("Link text: %s\n", linktext);
 						text[i_text] = '\0';
 						strcat(text, linktag);
@@ -359,7 +359,7 @@ seekdirectory(const char *path)
 
 	while ((entry = readdir(directory)) != NULL)
 	{
-		char relativefile[512];
+		char relativefile[WORKINGFILE_PATH_LENGHT_MAX];
 		struct stat filestat;
 
 		/* Skip dot files. */
@@ -369,7 +369,7 @@ seekdirectory(const char *path)
 		}
 
 		/* Relative path to the found file is stored in relativefile. */
-		snprintf(relativefile, 512, "%s/%s", path, entry->d_name);
+		snprintf(relativefile, WORKINGFILE_PATH_LENGHT_MAX, "%s/%s", path, entry->d_name);
 
 		/* Find out if the file is a directory. If so, enter it. */
 		if (stat(relativefile, &filestat ) == -1)

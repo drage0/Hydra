@@ -1,4 +1,20 @@
 /*
+ * Limits
+ * Using limited arrays because of simplicity.
+ */
+#define LINE_LENGTH_MAX 1024
+#define PARAGRAPH_LENGTH_MAX 1024
+#define TITLE_LENGTH_MAX 64
+#define JS_LENGTH_MAX 64
+#define KEYWORDS_LENGTH_MAX 64
+#define SPRITESHEET_LENGTH_MAX 64
+#define DESCRIPTION_LENGTH_MAX 256
+#define LINK_URL_LENGTH_MAX 256
+#define LINK_TEXT_LENGTH_MAX 64
+#define LINK_TAG_LENGTH_MAX (LINK_URL_LENGTH_MAX+LINK_TEXT_LENGTH_MAX+32)
+#define WORKINGFILE_PATH_LENGHT_MAX 128
+
+/*
  * Define the data used to make the HTML files.
  * PAGE_WIDTH defines the maximum width of the line.
  * TEXT_COLOUR defines the colour of the text.
