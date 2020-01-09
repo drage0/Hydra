@@ -131,7 +131,7 @@ convert(const char *path)
 		}
 
 		/* Headers */
-		if (line[0] == '#')
+		if (trim(line)[0] == '#')
 		{
 			char *line_trimmed;
 			if (line[1] == '#')
