@@ -7,6 +7,7 @@
 #include "configuration.h"
 
 static int verbose = 0;
+static char *projectdirectory;
 
 /*
  * Check if the given string representing the file name ends with ".md"
@@ -56,7 +57,7 @@ static void
 convert(const char *path)
 {
 	size_t len;
-	char outpath[WORKINGFILE_PATH_LENGHT_MAX], line[LINE_LENGTH_MAX], title[TITLE_LENGTH_MAX], javascriptpath[JS_LENGTH_MAX], keywords[KEYWORDS_LENGTH_MAX], description[DESCRIPTION_LENGTH_MAX], spritesheet[SPRITESHEET_LENGTH_MAX];
+	char outpath[WORKINGFILE_PATH_LENGHT_MAX], line[LINE_LENGTH_MAX], title[TITLE_LENGTH_MAX], javascriptpath[JS_LENGTH_MAX], keywords[KEYWORDS_LENGTH_MAX], description[DESCRIPTION_LENGTH_MAX], spritesheet[SPRITESHEET_LENGTH_MAX], stylepath[STYLEPATH_LENGTH_MAX], stylefile[STYLE_LENGTH_MAX], style[STYLE_LENGTH_MAX], background[BACKGROUND_LENGTH_MAX];
 	int recordlist, rawhtml;
 	FILE *out, *in;
 
@@ -101,6 +102,33 @@ convert(const char *path)
 	strcpy(spritesheet, line+8);
 	NO_NEW_LINE(spritesheet);
 
+	/* Read- background */
+	fgets(line, sizeof(line), in);
+	strcpy(background, line+11);
+	NO_NEW_LINE(background);
+
+	/* Read- style (CSS) */
+	strcpy(stylepath, projectdirectory);
+	strcat(stylepath, "/");
+	fgets(line, sizeof(line), in);
+	strcat(stylepath, trim(line+6));
+	NO_NEW_LINE(stylepath);
+	{
+		long len;
+		FILE *sf = fopen(stylepath, "r");
+		if (!sf)
+		{
+			fprintf(stderr, "Failed to open style file \"%s\"!\n", stylepath);
+			return;
+		}
+		fseek(sf, 0, SEEK_END);
+		len = ftell(sf);
+		fseek(sf, 0, SEEK_SET);
+		fread(stylefile, sizeof(char), len, sf);
+		fclose(sf);
+		sprintf(style, stylefile, trim(background), trim(spritesheet));
+	}
+
 	/* Head */
 	fputs("<!DOCTYPE html>\n", out);
 	fputs("<html lang=\""LANGUAGE"\">\n", out);
@@ -113,7 +141,7 @@ convert(const char *path)
 	fprintf(out, "<meta name=\"keywords\" content=\"%s\">\n", trim(keywords));
 	fprintf(out, "<meta name=\"description\" content=\"%s\">\n", trim(description));
 	fprintf(out, "<title>%s</title>\n", trim(title));
-	fprintf(out, "<style>"STYLE"</style>\n", trim(spritesheet));
+	fprintf(out, "<style>%s</style>\n", style);
 	fprintf(out, "<script src=\"%s\" defer></script>\n", trim(javascriptpath));
 	fputs("</head>\n", out);
 
@@ -398,7 +426,6 @@ int
 main(int argc, char **argv)
 {
 	int opt;
-	char *projectdirectory;
 
 	/* Parse arguments. */
 	while ((opt = getopt(argc, argv, "h")) != -1)

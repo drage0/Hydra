@@ -3,6 +3,8 @@ JAVASCRIPT: res/main.js
 KEYWORDS: Hydra,Software
 DESCRIPTION: Hydra software example.
 SPRITES: res/sheet.gif
+BACKGROUND: res/bg.jpg
+STYLE: res/theme.css
 ~Hydra software example.
 
 # Hydra

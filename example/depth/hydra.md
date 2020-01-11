@@ -3,6 +3,8 @@ JAVASCRIPT: ../res/main.js
 KEYWORDS: Лернејска хидра,Митологија
 DESCRIPTION: -
 SPRITES: res/sheet.gif
+BACKGROUND: ../res/bg.jpg
+STYLE: res/theme.css
 ~ UTF-8 test page.
 # Лернејска хидра
 
