@@ -202,14 +202,17 @@ convert(const char *path)
 		 *
 		 * Paragraphs that begin with '~' are considered -fancy text- and they
 		 * have their own style(class).
+		 *
+		 * Paragraphs beginning with '#' are headers.
 		 */
 		else if (!rawhtml)
 		{
-			char *parameters = "";
-			char *linestart = line, *tag;
+			char *parameters, *linestart, *tag;
 			size_t i, len;
 
 			/* Paragraphs beginning with '~' have their own class. */
+			parameters = "";
+			linestart  = line;
 			if (line[0] == '~')
 			{
 				parameters = " class='f'";
@@ -248,8 +251,14 @@ convert(const char *path)
 				}
 			}
 
+			/* Tag is 'li' if we are in list mode. */
+			if (recordlist)
+			{
+				tag = "li";
+			}
+
 			/* Begin tag */
-			recordlist ? fprintf(out, "<li%s>", parameters) : fprintf(out, "<%s%s>", tag, parameters);
+			fprintf(out, "<%s%s>", tag, parameters);
 			len = strlen(linestart);
 			for (i = 0; i < len; i++)
 			{
@@ -276,7 +285,6 @@ convert(const char *path)
 					{
 						fprintf(stderr, "Malformed link (missing '|'): %s\n", urlbegin);
 						fputs(urlbegin, out);
-						i += strlen(urlbegin);
 						break;
 					}
 					*urlend = '\0';
@@ -313,7 +321,7 @@ convert(const char *path)
 				}
 			}
 			/* End tag */
-			recordlist ? fputs("</li>\n", out) : fprintf(out, "</%s>\n", tag);
+			fprintf(out, "</%s>\n", tag);
 		}
 		else
 		{
